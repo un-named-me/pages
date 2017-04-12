@@ -1,6 +1,76 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<body>
+<head>
+  <meta charset="UTF-8">
+  <title>BROWSER-62016: Crash with signature: media::WMFMediaPipeline::CreateDataBufferFromTexture</title>
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+        crossorigin="anonymous">
+</head>
+<body class="container">
+<div class="row">
+  <div class="col-4"></div>
+  <button id="create" class="col-4 btn btn-success">Create player</button>
+  <div class="col-4"></div>
+</div>
+<div class="row">
+  <div id="pd" style="margin-top: 10px"></div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script type="application/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var btn = document.getElementById('create');
+        btn.onclick = function (event) {
+            event.stopPropagation();
+            var pd = document.getElementById('pd');
+            var videos_players = [['023829e11921ba13b0c36a489d4419b0_43.mp4', null],
+                                  ['18de2925d2ccfdfd1f0b6b450f7abb08_43.mp4', null],
+                                  ['3e8012430a09c3fd7bf23b88b8cc0737_43.mp4', null],
+                                  ['6e2e4cc1e5157734fee1222b36424542_43.mp4', null],
+                                  ['7c2eee014571c3f584c9af3434964149_43.mp4', null],
+                                  ['7d568e6b91e1295fd77eddac58671137_43.mp4', null],
+                                  ['9d318f9c928644cd4424da1163ec8a96_43.mp4', null]];
+            setInterval(function () {
+                for (var i = 0; i < videos_players.length; ++i) {
+                    if (videos_players[i][1] === null) {
+                        var player = document.createElement('video');
+                        pd.appendChild(player);
+                        player.src = videos_players[i][0];
+                        player.controls = true;
+                        player.play();
+                        videos_players[i][1] = player;
+                        return;
+                    }
+                }
+                for (var i = 0; i < videos_players.length; ++i) {
+                    if (videos_players[i][1].ended) {
+                        var player = document.createElement('video');
+                        pd.insertBefore(player, videos_players[i][1]);
+                        pd.removeChild(videos_players[i][1]);
+                        player.src = videos_players[i][0];
+                        player.controls = true;
+                        player.play();
+                        videos_players[i][1] = player;
+                        return;
+                    }
+                }
+
+            }, 400);
+        }
+    });
+</script>
 </body>
 </html>
